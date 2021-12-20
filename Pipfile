@@ -1,0 +1,24 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+selenium = "*"
+pymysql = "*"
+xlrd = "*"
+xlwt = "*"
+jsonpath = "*"
+pyuserinput = {index = "https://pypi.tuna.tsinghua.edu.cn/simple", version = "*"}
+pykeyboard = {index = "https://pypi.tuna.tsinghua.edu.cn/simple", version = "*"}
+xlutils = "*"
+pymongo = "*"
+cx-oracle = "*"
+psycopg2 = "*"
+psycopg2-binary = "*"
+flask = "*"
+
+[requires]
+python_version = "3.8"
