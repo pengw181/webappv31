@@ -9,6 +9,8 @@ from config.loads import properties
 from app.com.login.loads import login_config
 from app.com.login.statics_login import login_tool
 from app.AiSee.main.main_page import AiSee
+from app.VisualModeler.doctorwho.doctor_who import DoctorWho
+from common.page.handle.windows import WindowHandles
 from selenium.common.exceptions import NoSuchElementException
 
 
@@ -121,6 +123,24 @@ def auto_login_tool(func):
                        redirect_url=arg1.get("应用跳转url"), appId=arg1.get("appId"), domain_detail=arg1.get("领域明细"),
                        dsKey=arg1.get("dsKey"), custom=arg1.get("客户"), signature=arg1.get("签名秘钥"),
                        language=arg1.get("语言"))
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+# 定义一个自动从vm进入告警平台的装饰器
+def login_alarm_via_vm(func):
+    def wrapper(*args, **kwargs):
+        browser = get_global_var("browser")
+        try:
+            browser.find_element_by_xpath("//*[@menuid='CrawlerApp1000']")
+        except AttributeError:
+            DoctorWho().choose_menu("告警-告警平台")
+            # 切换到告警平台窗口
+            current_win_handle = WindowHandles()
+            current_win_handle.save("告警平台")
+            current_win_handle.switch("告警平台")
 
         return func(*args, **kwargs)
 
