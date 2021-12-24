@@ -27,7 +27,7 @@ class DoctorWho:
         # 切换到vm窗口
         self.current_win_handle.save("vm")
         self.current_win_handle.switch("vm")
-        log.info("tab : {}".format(get_global_var("TableHandles")))
+        # log.info("tab : {}".format(get_global_var("TableHandles")))
         if bool(get_global_var("TableHandles")):
             self.browser.refresh()
         wait = WebDriverWait(self.browser, 30)
