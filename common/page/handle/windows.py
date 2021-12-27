@@ -14,7 +14,7 @@ class WindowHandles:
         self.win_handles = get_global_var("WinHandles")
         if self.win_handles is None:
             self.win_handles = {}
-        log.info("当前保存窗口信息:{0}".format(self.win_handles))
+        # log.info("当前保存窗口信息:{0}".format(self.win_handles))
 
     def save(self, title):
         current_win = self.browser.current_window_handle
