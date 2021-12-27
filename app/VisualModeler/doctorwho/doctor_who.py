@@ -23,6 +23,7 @@ class DoctorWho:
 
         # 关闭多余窗口
         self.current_win_handle.close(title="流程图编辑器")
+        self.current_win_handle.close(title="告警平台")
 
         # 切换到vm窗口
         self.current_win_handle.save("vm")
