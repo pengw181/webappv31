@@ -6,6 +6,7 @@ from config.loads import properties
 from app.VisualModeler.main.run.servers import actions as visual_actions
 from app.Crawler.main.run.servers import actions as crawler_actions
 from app.AiSee.main.run.servers import actions as aisee_actions
+from app.AlarmPlatform.main.run.servers import actions as alarm_actions
 
 
 def server_run(func, param):
@@ -22,6 +23,8 @@ def server_run(func, param):
         run_flag = crawler_actions(func, param)
     elif application == "aisee":
         run_flag = aisee_actions(func, param)
+    elif application == "alarmplatform":
+        run_flag = alarm_actions(func, param)
     else:
         raise Exception("非法的application名称: {}".format(application))
 
