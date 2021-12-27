@@ -129,19 +129,26 @@ def auto_login_tool(func):
     return wrapper
 
 
-# 定义一个自动从vm进入告警平台的装饰器
-def login_alarm_via_vm(func):
-    def wrapper(*args, **kwargs):
-        browser = get_global_var("browser")
-        try:
-            browser.find_element_by_xpath("//*[@menuid='CrawlerApp1000']")
-        except AttributeError:
-            DoctorWho().choose_menu("告警-告警平台")
-            # 切换到告警平台窗口
-            current_win_handle = WindowHandles()
-            current_win_handle.save("告警平台")
-            current_win_handle.switch("告警平台")
-
-        return func(*args, **kwargs)
-
-    return wrapper
+# 定义一个自动从vm进入告警平台等其它平台的装饰器
+def enter_platform(platform):
+    def login_via_vm(func):
+        def wrapper(*args, **kwargs):
+            browser = get_global_var("browser")
+            menu_map = {
+                "告警平台": "告警-告警平台",
+                "数据接入": "数据接入-数据接入平台",
+                "云平台": "云平台-云平台",
+                "OA审批": "OA审批-OA审批平台",
+            }
+            if browser.current_window_handle == get_global_var("WinHandles").get(platform):
+                log.info("已登录【platform】")
+            else:
+                log.info("开始从vm登录{}".format(platform))
+                DoctorWho().choose_menu(menu_map.get(platform))
+                # 切换到其它平台窗口
+                current_win_handle = WindowHandles()
+                current_win_handle.save(platform)
+                current_win_handle.switch(platform)
+            return func(*args, **kwargs)
+        return wrapper
+    return login_via_vm
