@@ -55,7 +55,7 @@ class DoctorWho:
                 sleep(1)
 
                 # 如果打开的二级菜单是在当前页面，在点击二级菜单后需要保存tab句柄
-                if second_menu not in ("云平台", "告警", "OA审批平台"):
+                if second_menu not in ("云平台", "告警平台", "数据接入平台", "OA审批平台"):
                     if second_menu not in ["文件目录管理"]:
                         current_tab_handle.save(second_menu)
                         current_tab_handle.switch(second_menu)
@@ -71,9 +71,10 @@ class DoctorWho:
                         current_tab_handle.switch(third_menu)
                 else:
                     # 如果打开的二级菜单是新开标签，如：告警、OA审批平台、云平台，在点击二级菜单后需要保存windows句柄
+                    log.info("进入【{}】".format(second_menu))
                     self.current_win_handle.save(second_menu)
                     self.current_win_handle.switch(second_menu)
-                    sleep(3)
+                    sleep(1)
             return True
         except NoSuchElementException:
             return False
