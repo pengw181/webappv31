@@ -52,6 +52,9 @@ def auto_enter_vm(func):
                 if browser.current_window_handle == get_global_var("WinHandles").get("流程图编辑器"):
                     log.info("当前处于流程图编辑器窗口")
                     pass
+                elif browser.current_window_handle == get_global_var("WinHandles").get("告警平台"):
+                    log.info("当前处于告警平台")
+                    pass
                 else:
                     log.info("当前已登录，未进入领域，自动进入广州核心网")
                     arg2 = {
@@ -141,14 +144,11 @@ def enter_platform(platform):
                 "OA审批": "OA审批-OA审批平台",
             }
             if browser.current_window_handle == get_global_var("WinHandles").get(platform):
-                log.info("已登录【platform】")
+                log.info("已登录【{}】".format(platform))
             else:
+                dw = DoctorWho()
                 log.info("开始从vm登录{}".format(platform))
-                DoctorWho().choose_menu(menu_map.get(platform))
-                # 切换到其它平台窗口
-                current_win_handle = WindowHandles()
-                current_win_handle.save(platform)
-                current_win_handle.switch(platform)
+                dw.choose_menu(menu_map.get(platform))
             return func(*args, **kwargs)
         return wrapper
     return login_via_vm
