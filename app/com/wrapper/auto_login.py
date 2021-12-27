@@ -10,7 +10,6 @@ from app.com.login.loads import login_config
 from app.com.login.statics_login import login_tool
 from app.AiSee.main.main_page import AiSee
 from app.VisualModeler.doctorwho.doctor_who import DoctorWho
-from common.page.handle.windows import WindowHandles
 from selenium.common.exceptions import NoSuchElementException
 
 
