@@ -11,7 +11,7 @@ def get_logger():
     # 创建logger
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)  # 设置logger日志等级
-    logs_path = properties.get("projectBasePath") + '/webapp/logs/'
+    logs_path = properties.get("projectBasePath") + '/webappv31/logs/'
     application = properties.get("application")
     if application is None:
         filename = logs_path + "catalina.out"
