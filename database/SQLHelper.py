@@ -116,7 +116,7 @@ class SQLUtil:
             date_list = None
         return date_list
 
-    def update(self, sql):
+    def update(self, sql, skip=False):
         if self.finish_init:
             try:
                 log.info(">>> 执行sql:> {0} ".format(sql))
@@ -133,7 +133,10 @@ class SQLUtil:
                     flag = True
             except Exception as e:
                 self.conn.rollback()
-                raise e
+                if skip:
+                    flag = True
+                else:
+                    raise e
             finally:
                 self.curs.close()
                 self.conn.close()
