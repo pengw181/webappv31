@@ -80,7 +80,11 @@ def preconditions(action):
                         if sql.find("select") == 0 or sql.find("SELECT") == 0:      # 查询
                             sql_result = sql_util.select(sql)
                         else:   # 修改或删除
-                            sql_result = sql_util.update(sql)
+                            if len(each_pre) > 3 and each_pre[3].lower() == "continue":
+                                skip = True
+                            else:
+                                skip = False
+                            sql_result = sql_util.update(sql, skip=skip)
                         log.info("成功执行sql语句：{}".format(sql))
                         # 将第3个参数加入全局变量字典
                         if len(each_pre) > 2:
@@ -115,6 +119,10 @@ def preconditions(action):
                                     log.info("给变量{0}赋值：{1}".format(each_pre[2], sql_result))
                             run_flag = True
                     except:
+                        if len(each_pre) > 3 and each_pre[3].lower() == "continue":
+                            # 报错继续执行下一条
+                            run_flag = True
+                            continue
                         log.error("不支持的预置操作: {0}".format(each_pre[0]))
                         store_error_code("预置条件输入错误: {0}".format(each_pre))
                         run_flag = False
