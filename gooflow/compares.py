@@ -107,12 +107,15 @@ def compare_data(checks):
                     # GetData|${Database}.main|select xx from xx|NodeID
                     # 将sql查询到的结果，赋值给新变量名NodeID，匹配结果中，以${NodeID}使用变量的值
                     db_tmp = my_list[1].split(".")
-                    db = db_tmp[0]
-                    schema = db_tmp[1]
-                    schema = get_schema(schema)
+
+                    schema = db_tmp[-1]
+                    db = ".".join(db_tmp[: -1])
+                    # schema = get_schema(schema)
                     # 如果没创建nu，使用sso登录，但sql语句里需要主动加上nu.前缀
                     if schema == "nu":
                         schema = "sso"
+                    log.info("db: {}".format(db))
+                    log.info("schema: {}".format(get_schema(schema)))
                     sql = my_list[2]
                     # 自动替换${xx}变量
                     db = replace_global_var(db)
