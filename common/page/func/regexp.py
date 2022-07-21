@@ -9,11 +9,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from datetime import datetime
-from common.page.func.page_mask_wait import page_wait
+from common.page.func.pageMaskWait import page_wait
 from common.page.func.input import set_textarea
-from common.page.func.load_data import load_sample
+from common.page.func.loadData import load_sample
 from common.log.logger import log
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 
 
 def regular_cube(set_type="添加", regular_name=None, advance_mode=None, regular=None, expression=None, enable_check=None,
@@ -59,7 +59,8 @@ def regular_cube(set_type="添加", regular_name=None, advance_mode=None, regula
                 "匹配小数": "否",
                 "匹配%": "否",
                 "匹配千分位": "否",
-                "匹配并去掉逗号": "1到多个",
+                "匹配并去掉逗号": "否",
+                "长度": "1到多个",
                 "是否取值": "绿色"
             },
             {
@@ -175,7 +176,7 @@ def regular_cube(set_type="添加", regular_name=None, advance_mode=None, regula
                     color_button = "whiteButton"
 
                 # 选择标签并着色
-                if tag_name in ["任意字符", "日期", "任意中文字符", "字母", "空格", "任意非空格", "字母/数字", "特殊字符", "换行"]:
+                if tag_name in ["任意字符", "任意中文字符", "字母", "空格", "任意非空格", "字母/数字", "特殊字符", "换行"]:
                     tag_value = tag_msg.get("长度")
                 elif tag_name == "数字":
                     if tag_msg.__contains__("匹配千分位"):
@@ -190,6 +191,8 @@ def regular_cube(set_type="添加", regular_name=None, advance_mode=None, regula
                         tag_value = "千分位数字"
                     else:
                         tag_value = tag_msg.get("长度")
+                elif tag_name == "日期":
+                    tag_value = tag_msg.get("时间格式")
                 elif tag_name == "自定义文本":
                     tag_value = tag_msg.get("自定义值")
                 elif tag_name == "IP":
@@ -327,6 +330,10 @@ def set_label_attribute(browser, confirm_selector, label_name, tag_info):
         "IPV4": "是",
         "IPV6": "是",
         "是否取值": "绿色"
+    },
+    {
+        "标签": "日期",
+        "时间格式": "2014-05-28 12:30:00"
     }
     """
 

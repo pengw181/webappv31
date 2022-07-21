@@ -22,12 +22,21 @@ def get_schema(schema):
             "nu": "nu",
             "dashboard": "dashboard"
         }
+    elif properties.get("environment") == "v31.postgres":
+        # 9990
+        schema_map = {
+            "main": "aisee1",
+            "sso": "sso",
+            "alarm": "alarm",
+            "dashboard": "dashboard"
+        }
     else:
         # 默认
         schema_map = {
             "main": "aisee1",
             "sso": "sso",
             "nu": "nu",
+            "alarm": "alarm",
             "dashboard": "dashboard"
         }
 

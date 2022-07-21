@@ -4,8 +4,7 @@
 
 from config.loads import properties
 from gooflow.controller import case_run
-from common.variable.global_variable import *
-from config.serviceInit import service_init
+from common.variable.globalVariable import *
 
 
 def main():
@@ -25,11 +24,8 @@ def main():
     set_global_var("Belong", "广州市")
     set_global_var("Domain", "广州核心网")
 
-    # 业务变量初始化
-    service_init()
-
     # 开始运行，第一个数字为读取第几个测试用例文件（从1开始），第二个数字为读取测试用例的第几行（从1开始）
-    case_run(24, 1)
+    case_run(15, 14)
 
 
 if __name__ == "__main__":

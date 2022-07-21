@@ -3,13 +3,13 @@
 # @Time: 2021/9/17 下午4:06
 
 from common.log.logger import log
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from selenium.webdriver import ActionChains
-from common.page.func.alert_box import BeAlertBox
+from common.page.func.alertBox import BeAlertBox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from common.page.func.page_mask_wait import page_wait
+from common.page.func.pageMaskWait import page_wait
 from app.AiSee.netunit.menu import choose_menu
 from time import sleep
 

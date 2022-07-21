@@ -2,13 +2,13 @@
 # @Author: peng wei
 # @Time: 2021/12/24 下午3:08
 
-from common.variable.global_variable import *
-from common.page.func.page_mask_wait import page_wait
+from common.variable.globalVariable import *
+from common.page.func.pageMaskWait import page_wait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from app.AlarmPlatform.main.menu.choose_menu import choose_menu
-from common.page.func.alert_box import BeAlertBox
+from app.AlarmPlatform.main.menu.chooseMenu import choose_menu
+from common.page.func.alertBox import BeAlertBox
 from time import sleep
 from common.log.logger import log
 

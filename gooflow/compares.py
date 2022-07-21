@@ -2,7 +2,7 @@
 # @Author: peng wei
 # @Time: 2021/7/20 上午11:14
 
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from datetime import datetime
 from time import sleep
 from gooflow.checks import check_db_data, check_msg
@@ -28,7 +28,7 @@ def compare_data(checks):
 
         for i in range(len(check_list)):
 
-            log.info("开始处理 {0}".format(check_list[i]))
+            log.info("开始处理【{0}】 {1}".format(i+1, check_list[i]))
             set_global_var("EndTime", datetime.now().strftime('%Y%m%d%H%M%S'), False)
             if check_list[i].strip() == "":
                 # 为空不匹配，默认成功
@@ -54,13 +54,10 @@ def compare_data(checks):
 
                     # 自动替换${xx}变量
                     db = replace_global_var(db)
-                    log.info("db: {}".format(db))
-                    log.info("schema: {}".format(get_schema(schema)))
+                    table_name = replace_global_var(table_name)
+                    log.info("db: {0}, schema: {1}".format(db, get_schema(schema)))
                     data = replace_global_var(data)
                     log.info("data: {}".format(data))
-
-                    # 对于匹配字段里有～的，替换成换行
-                    data = data.replace("~", r"\r\n")
 
                     check_result = check_db_data(db, schema, table_name, data, count)
                     if not check_result.get("status"):
@@ -110,12 +107,12 @@ def compare_data(checks):
 
                     schema = db_tmp[-1]
                     db = ".".join(db_tmp[: -1])
+                    db = replace_global_var(db)
                     # schema = get_schema(schema)
                     # 如果没创建nu，使用sso登录，但sql语句里需要主动加上nu.前缀
                     if schema == "nu":
                         schema = "sso"
-                    log.info("db: {}".format(db))
-                    log.info("schema: {}".format(get_schema(schema)))
+                    log.info("db: {0}, schema: {1}".format(db, get_schema(schema)))
                     sql = my_list[2]
                     # 自动替换${xx}变量
                     db = replace_global_var(db)
@@ -124,7 +121,7 @@ def compare_data(checks):
                     sql_util = SQLUtil(db=db, schema=schema)
                     sql_result = sql_util.select(sql)
                     # 将查到的结果，存入全局变量
-                    set_global_var(my_list[3].strip(), sql_result)
+                    set_global_var(my_list[3].strip(), sql_result, False)
 
                 else:
                     log.error("非法比对函数: {0}".format(compare_item))

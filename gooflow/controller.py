@@ -8,14 +8,19 @@ from xlutils.copy import copy
 from datetime import datetime
 from time import sleep
 from gooflow.caseWorker import CaseWorker
+from gooflow.initiation import initiation_work
 from config.loads import properties
 from common.log.logger import log
+from common.variable.globalVariable import *
 
 
 def case_run(filenum, rownum):
 
+    # 开始测试前，数据初始化
+    initiation_work()
+
     # 根据当前测试应用名，打开相应的测试用例集
-    application = properties.get("application")
+    application = get_global_var("Application")
     if application is None:
         raise Exception("!!! application未设置.")
     path = properties.get("testCaseControllerPath") + application + "/controller.xls"

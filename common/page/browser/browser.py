@@ -5,7 +5,7 @@
 
 from selenium import webdriver
 from common.log.logger import log
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from config.loads import properties
 
 
@@ -19,6 +19,6 @@ def init_browser():
     params = {'cmd': 'Page.setDownloadBehavior',
               'params': {'behavior': 'allow', 'downloadPath': properties.get("downLoadPath")}}
     browser.execute("send_command", params)
-    log.info("浏览器初始化完成，浏览器信息: {}".format(browser))
+    log.info("浏览器初始化完成")
     set_global_var("browser", browser)
     return browser

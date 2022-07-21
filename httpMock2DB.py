@@ -21,6 +21,7 @@ app.url_map.converters['regex'] = RegexConverter
 @app.route('/mock/http/<regex("[a-zA-Z0-9]+"):callType>', methods=['GET', 'POST', 'DELETE', 'PUT', 'HEAD', 'OPTIONS'])
 def mock(callType):
 
+    print("------------------------")
     print("callType: {}".format(callType))
 
     req_method = flask.request.method
@@ -28,6 +29,8 @@ def mock(callType):
 
     req_time = datetime.now().replace(microsecond=0)
     print("req_time: {}".format(req_time))
+
+    print("req_form: {}".format(flask.request.form.to_dict()))
 
     req_head = flask.request.headers
     # print("req_head: {}".format(req_head))
@@ -39,7 +42,7 @@ def mock(callType):
     print("req_data: {}".format(req_data))
 
     req_args = flask.request.args
-    print("req_args: {}".format(req_args))
+    print("req_args: {}".format(req_args.to_dict()))
 
     auth = flask.request.authorization
     print("auth: {}".format(flask.request.authorization))

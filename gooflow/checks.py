@@ -2,9 +2,9 @@
 # @Author: peng wei
 # @Time: 2021/7/20 上午11:15
 
-from database.sql_format import get_sql
+from database.sqlFormat import get_sql
 from database.SQLHelper import SQLUtil
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from config.loads import properties, db_config
 import re
 from datetime import datetime
@@ -148,7 +148,7 @@ def check_db_data(db, schema, table_name, data, count):
                             begin = match.group(1)
                             end = match.group(2)
                             record_time = record[i]
-                            if database_type != "postgres":
+                            if database_type in ["mysql"]:
                                 record_time = datetime.strptime(record_time, '%Y-%m-%d %H:%M:%S')
                             record_time = datetime.strftime(record_time, '%Y%m%d%H%M%S')
                             if begin > record_time or record_time > end:
@@ -193,6 +193,9 @@ def check_db_data(db, schema, table_name, data, count):
                             check_tmp = check_list[i]
                             check_list[i] = check_tmp.replace('”', '"')
                             # check_list[i] = check_list[i].replace("''", "'")
+                            # if database_type in ["oracle"]:
+                            #     if check_list[i] == "":
+                            #         check_list[i] = None
                             if str(record[i]) != check_list[i]:
                                 log.info("列名：{0}".format(column_name[i]))
                                 log.info("实际：{0}".format(record[i]))

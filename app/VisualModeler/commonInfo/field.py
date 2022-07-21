@@ -2,15 +2,15 @@
 # @Author: peng wei
 # @Time: 2021/7/21 上午11:01
 
-from app.VisualModeler.doctorwho.doctor_who import DoctorWho
+from app.VisualModeler.doctorwho.doctorWho import DoctorWho
 from time import sleep
-from common.page.func.alert_box import BeAlertBox
+from common.page.func.alertBox import BeAlertBox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from common.page.func.page_mask_wait import page_wait
+from common.page.func.pageMaskWait import page_wait
 from common.log.logger import log
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 
 
 class ProfessionField:
@@ -135,6 +135,7 @@ class ProfessionField:
         self.browser.find_element_by_xpath("//*[@name='tempTypeName']/preceding-sibling::input").send_keys(obj)
         self.browser.find_element_by_xpath("//*[@id='btn']//*[text()='查询']").click()
         page_wait()
+        fuzzy_match = True if fuzzy_match == "是" else False
         if fuzzy_match:
             record_element = self.browser.find_elements_by_xpath(
                 "//*[@field='tempTypeName']/*[contains(@class,'tempTypeName') and starts-with(text(),'{0}')]".format(obj))
@@ -179,7 +180,7 @@ class ProfessionField:
                     # 无权操作
                     log.warn("{0} 清理失败，失败提示: {1}".format(obj, msg))
                     set_global_var("ResultMsg", msg, False)
-
+                    break
         else:
             # 查询结果为空,结束处理
             log.info("查询不到满足条件的数据，无需清理")

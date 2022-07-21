@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from common.log.logger import log
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 
 
 def cmd_node_choose_level(level):
@@ -131,3 +131,68 @@ def cmd_set_choose_level(level_list):
 
         log.info("选择层级: {}".format(level_path))
 
+
+def choose_level(level_list):
+    """
+    指令集搜索条件、数据拼盘选择网元分类，多选
+    :param level_list: 网元分类，数组
+    :return: 点击
+    """
+    browser = get_global_var("browser")
+
+    # 先勾选取消所有已选项
+    tree_selected = browser.find_elements_by_xpath("//*[contains(@id,'_tree_') and contains(@class, 'selected')]")
+    if len(tree_selected) > 0:
+        for element in tree_selected:
+            action = ActionChains(browser)
+            action.move_to_element(element).click().perform()
+
+    if not isinstance(level_list, list):
+        raise KeyError("网元分类需要是数组，每个值的一级和二级层级使用英文逗号分隔")
+
+    for level in level_list:
+        level_path = level.split(",", 1)
+        first_level = level_path[0]
+
+        # 等待加载下拉框列表
+        wait = WebDriverWait(browser, 30)
+        wait.until(ec.element_to_be_clickable((
+            By.XPATH,
+            "//*[contains(@id,'_tree_')]/span[@class='tree-title' and text()='{0}']".format(first_level))))
+
+        try:
+            first_level_xpath = "//*[contains(@id,'_tree_')]/span[@class='tree-title' and text()='{}']".format(
+                first_level)
+            first_level_element = browser.find_element_by_xpath(first_level_xpath)
+            # 如果第一个层级存在，则判断层级是否已展开
+            browser.execute_script("arguments[0].scrollIntoView(true);", first_level_element)
+            log.info("定位到层级: {0}".format(first_level))
+            expanded_element = browser.find_element_by_xpath(first_level_xpath + "/preceding-sibling::span[3]")
+            # 获取展开标识
+            expand_class = expanded_element.get_attribute("class")
+            # log.info(expand_class)
+            if expand_class.find("tree-expanded") == -1:
+                # 未展开，点击+展开
+                expanded_element.click()
+            # 展开后，则判断是否需要点击第二层级
+            if len(level_path) > 1:
+                # 如果有第二层级，则继续选择第二层级
+                second_path = level_path[1]
+                # 等待加载下拉框列表
+                wait = WebDriverWait(browser, 30)
+                wait.until(ec.element_to_be_clickable((
+                    By.XPATH,
+                    "//*[contains(@id,'_tree_')]/span[@class='tree-title' and text()='{0}']".format(second_path))))
+                second_level_element = browser.find_element_by_xpath(
+                    "//*[contains(@id,'_tree_')]/span[@class='tree-title' and text()='{0}']".format(second_path))
+                browser.execute_script("arguments[0].scrollIntoView(true);", second_level_element)
+                log.info("定位到层级: {0}".format(second_path))
+                second_level_element.click()
+                sleep(1)
+            else:
+                # 如果没有第二层级，则选择整个当前层级
+                first_level_element.click()
+        except NoSuchElementException:
+            raise
+
+        log.info("选择网元分类: {}".format(level_path))

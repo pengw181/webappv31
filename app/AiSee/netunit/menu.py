@@ -2,9 +2,9 @@
 # @Author: peng wei
 # @Time: 2021/9/28 下午4:09
 
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from time import sleep
-from common.page.func.page_mask_wait import page_wait
+from common.page.func.pageMaskWait import page_wait
 from common.log.logger import log
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait

@@ -3,7 +3,7 @@
 # @Time: 2021/7/20 上午11:55
 
 from selenium.common.exceptions import NoSuchWindowException
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from common.log.logger import log
 
 
@@ -54,8 +54,9 @@ class WindowHandles:
             self.browser.close()
             self.win_handles.pop(title)
             set_global_var("WinHandles", self.win_handles)
-            self.browser.switch_to.window(self.win_handles.get("vm"))
+            self.browser.switch_to.window(self.browser.window_handles[-1])
             log.info("窗口【{0}】已关闭.".format(title))
             log.info(get_global_var("WinHandles"))
+            self.browser.refresh()
         else:
             log.info("窗口【{0}】不存在，无需关闭.".format(title))

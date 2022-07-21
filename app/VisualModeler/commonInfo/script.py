@@ -2,17 +2,17 @@
 # @Author: peng wei
 # @Time: 2021/7/21 上午11:10
 
-from app.VisualModeler.doctorwho.doctor_who import DoctorWho
+from app.VisualModeler.doctorwho.doctorWho import DoctorWho
 from time import sleep
-from common.page.func.alert_box import BeAlertBox
+from common.page.func.alertBox import BeAlertBox
 from selenium.webdriver import ActionChains
 from common.page.func.upload import upload
-from common.page.func.page_mask_wait import page_wait
+from common.page.func.pageMaskWait import page_wait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from common.log.logger import log
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 
 
 class Script:
@@ -56,7 +56,7 @@ class Script:
         self.script_page(script_name=script_name, script_type=script_type, data_type=data_type)
         alert = BeAlertBox()
         msg = alert.get_msg()
-        if alert.title_contains("成功"):
+        if alert.title_contains("操作成功"):
             log.info("数据 {0} 添加成功".format(script_name))
         else:
             log.warn("数据 {0} 添加失败，失败提示: {1}".format(script_name, msg))
@@ -88,7 +88,7 @@ class Script:
             self.script_page(script_name=script_name, data_type=data_type)
             alert = BeAlertBox()
             msg = alert.get_msg()
-            if alert.title_contains("成功"):
+            if alert.title_contains("操作成功"):
                 log.info("{0} 修改成功".format(obj))
             else:
                 log.warn("{0} 修改失败，失败提示: {1}".format(obj, msg))
@@ -210,12 +210,13 @@ class Script:
         self.choose_version(script_name, ver_no)
 
         # 点击选择文件
-        self.browser.find_element_by_xpath(
-            "//*[@id='fileName']/following-sibling::span[1]//*[@for='filebox_file_id_2']").click()
+        # self.browser.find_element_by_xpath(
+        #     "//*[@id='fileName']/following-sibling::span[1]//*[@for='filebox_file_id_2']").click()
+        # sleep(1)
 
         # 调用上传文件操作
         log.info("执行上传脚本文件操作")
-        upload(file_name=file_name)
+        upload(file_name=file_name, catalog="script")
         self.browser.find_element_by_xpath("//*[@id='importScriptFile']//*[text()='上传文件']").click()
 
         alert = BeAlertBox()
@@ -504,7 +505,7 @@ class Script:
         self.browser.find_element_by_xpath(
             "//*[contains(text(),'脚本类型')]/../following-sibling::div[1]//*[text()='查询']").click()
         page_wait()
-
+        fuzzy_match = True if fuzzy_match == "是" else False
         if fuzzy_match:
             record_element = self.browser.find_elements_by_xpath(
                 "//*[@field='scriptName']/*[contains(@class,'scriptName') and starts-with(text(),'{0}')]".format(obj))
@@ -549,7 +550,7 @@ class Script:
                     # 无权操作
                     log.warn("{0} 清理失败，失败提示: {1}".format(obj, msg))
                     set_global_var("ResultMsg", msg, False)
-
+                    break
         else:
             # 查询结果为空,结束处理
             log.info("查询不到满足条件的数据，无需清理")

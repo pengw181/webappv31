@@ -2,12 +2,12 @@
 # @Author: peng wei
 # @Time: 2021/9/29 下午4:39
 
-from app.AiSee.main.main_page import AiSee
+from app.AiSee.main.mainPage import AiSee
 from app.AiSee.netunit.netunitInfo import NetUnit
 from app.AiSee.netunit.account import AccountTemp
 from app.AiSee.netunit.connectReport import ConnectTestReport
 from common.log.logger import log
-from app.com.wrapper.auto_login import auto_login_aisee
+from common.wrapper.autoLogin import auto_login_aisee
 from app.AiSee.netunit.menu import choose_domain
 
 

@@ -4,6 +4,8 @@
 
 import os
 import configparser
+from .applicationMap import get_application_name
+from common.variable.globalVariable import *
 
 
 class LoadDBConfig:
@@ -50,7 +52,6 @@ class LoadMongoConfig:
 
     def __init__(self):
         _conf_dir = os.path.dirname(os.path.abspath(__file__)) + "/mongodb.ini"
-        # print(_conf_dir)
 
         # 对内容隐藏字符做处理，替换隐藏字符
         # content = open(dir).read()
@@ -88,8 +89,8 @@ mongo_config = LoadMongoConfig().get_config()
 
 class Properties(object):
 
-    def __init__(self, fileName):
-        self.fileName = fileName
+    def __init__(self):
+        self.fileName = os.path.dirname(__file__) + "/app.properties"
         self.properties = {}
 
     def __get_dict(self, strName, dictName, value):
@@ -98,6 +99,8 @@ class Properties(object):
             dictName.setdefault(k, {})
             return self.__get_dict(strName[len(k)+1:], dictName[k], value)
         else:
+            if strName == "application":    # application参数映射，特殊处理
+                value = get_application_name(value)
             dictName[strName] = value
             return
 
@@ -119,5 +122,5 @@ class Properties(object):
         return self.properties
 
 
-properties_file = os.path.dirname(__file__) + "/app.properties"
-properties = Properties(properties_file).get_properties()
+properties = Properties().get_properties()
+set_global_var("Application", properties.get("application"))

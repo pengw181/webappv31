@@ -2,18 +2,20 @@
 # @Author: peng wei
 # @Time: 2021/7/21 上午11:43
 
-from app.VisualModeler.doctorwho.doctor_who import DoctorWho
+from app.VisualModeler.doctorwho.doctorWho import DoctorWho
 from time import sleep
-from common.page.func.alert_box import BeAlertBox
+from common.page.func.alertBox import BeAlertBox
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import ActionChains
 from common.page.func.upload import upload
+from config.loads import properties
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from common.page.func.page_mask_wait import page_wait
+from common.page.func.pageMaskWait import page_wait
+from database.SQLHelper import SQLUtil
 from common.log.logger import log
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 
 
 class File:
@@ -38,6 +40,16 @@ class File:
         page_wait()
         sleep(1)
 
+        # 获取系统目录
+        sql_util = SQLUtil(db=get_global_var("Database"), schema="main")
+        sql = """ SELECT A.CATALOG_PATH AS catalogPath FROM TN_CATALOG_DEF A
+            WHERE A.CATALOG_TYPE = '1'
+            AND A.BELONG_ID = '{0}' AND A.DOMAIN_ID = '{1}'""".format(get_global_var("BelongID"), get_global_var("DomainID"))
+        system_catalog_path = sql_util.select(sql)
+        system_catalog_path = system_catalog_path.split("/")
+        self.system_catalog_path = system_catalog_path[-1]
+        log.info(self.system_catalog_path)
+
     def choose_dir(self, dir_name):
         """
         :param dir_name: 目标目录
@@ -46,6 +58,8 @@ class File:
         if self.catalog == "personal" and dir_name == "personal":
             # 父目录是根目录
             dir_name = get_global_var("LoginUser")
+        if dir_name == "system":
+            dir_name = self.system_catalog_path
         dir_elements = self.browser.find_elements_by_xpath("//*[@class='tree-title' and text()='{0}']".format(dir_name))
         dir_element = None
         for element in dir_elements:
@@ -86,6 +100,7 @@ class File:
         for element in add_elements:
             if element.is_displayed():
                 element.click()
+                break
 
         # 切换到添加目录的iframe
         wait = WebDriverWait(self.browser, 30)
@@ -99,6 +114,8 @@ class File:
             # 父目录是根目录
             parent_dir = get_global_var("LoginUser")
         cur_parent = self.browser.find_element_by_xpath("//*[@name='parentPath']").get_attribute("value")
+        if parent_dir == "system":
+            parent_dir = self.system_catalog_path
         if parent_dir != cur_parent:
             raise Exception("当前选择目录【{0}】，预期选择【{1}】".format(cur_parent, parent_dir))
         else:
@@ -183,9 +200,10 @@ class File:
                 set_global_var("ResultMsg", msg, False)
         return dir_exist
 
-    def upload_file(self, dir_name, file_name):
+    def upload_file(self, dir_name, catalog, file_name):
         """
         :param dir_name: 目标目录
+        :param catalog: 文件类别
         :param file_name: 文件名
         """
         # 选择目录
@@ -197,10 +215,9 @@ class File:
         sleep(1)
         wait = WebDriverWait(self.browser, 30)
         wait.until(ec.element_to_be_clickable((By.XPATH, "//*[contains(@for,'filebox_file_id_')]")))
-        self.browser.find_element_by_xpath("//*[contains(@for,'filebox_file_id_')]").click()
-        sleep(3)
+
         log.info("开始上传文件: {0}".format(file_name))
-        upload(file_name=file_name)
+        upload(file_name=file_name, catalog=catalog)
         sleep(1)
         self.browser.find_element_by_xpath("//*[@onclick='uploadFiles()']//*[text()='上传']").click()
 

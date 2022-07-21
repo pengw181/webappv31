@@ -2,7 +2,7 @@
 # @Author: peng wei
 # @Time: 2021/7/20 上午11:18
 
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 
 
 def store_error_code(msg):

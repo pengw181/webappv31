@@ -8,10 +8,10 @@ from xlutils.copy import copy
 from gooflow.precondition import preconditions
 from gooflow.operation import basic_run
 from gooflow.compares import compare_data
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from config.loads import properties
 from datetime import datetime
-from gooflow.initiation import init
+from gooflow.initiation import Initiation
 from common.log.logger import log
 
 
@@ -115,7 +115,7 @@ class CaseWorker:
                 # 重新获取新一行的用例
                 current_column = self.column_definition(row_num)
                 case_name = current_column[0]
-                log.info("本行用例不执行，跳过\n")
+                log.info("第{0}行用例不执行，跳过\n".format(row_num-1))
             else:
                 if properties.get("runAllTest"):
                     pass
@@ -131,7 +131,7 @@ class CaseWorker:
                         self.wsheets.write(row_num, 8, "")
                         self.wbook.save(self.path)
                         row_num += 1
-                        log.info("本行用例级别较低，不执行，跳过")
+                        log.info("第{0}行用例级别较低，不执行，跳过".format(row_num-1))
 
                         if row_num <= (self.nrows - 1):
                             # 重新获取新一行的用例
@@ -146,8 +146,8 @@ class CaseWorker:
                 self.wsheets.write(row_num, 8, "")
                 self.wbook.save(self.path)
 
-                # 开始测试前，做初始工作
-                init()
+                # 开始测试前，数据清理
+                Initiation.clear_var()
 
                 # 执行前置条件
                 set_global_var("StartTime", datetime.now().strftime('%Y%m%d%H%M%S'), False)
@@ -212,9 +212,11 @@ class CaseWorker:
                     log.info("已经成功执行{0}条用例！\n".format(self.successNum))
 
                     # 如果是AiSee操作，不宜刷新页面，页面一刷新就要重新从menu进入
-                    if properties.get("application") == "aisee":
+                    if get_global_var("Application") == "AiSee":
                         pass
                     else:
+                        # 清空TableHandles变量，防止在doctor_who页面刷新2次
+                        # set_global_var("TableHandles", None)
                         get_global_var("browser").refresh()
                 else:
                     log.info("错误信息: {0}".format(get_global_var("ErrorMsg")))

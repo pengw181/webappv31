@@ -3,16 +3,16 @@
 # @Time: 2021/9/17 下午4:05
 
 from common.log.logger import log
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from common.page.func.page_mask_wait import page_wait
+from common.page.func.pageMaskWait import page_wait
 from app.AiSee.netunit.menu import choose_menu
 from time import sleep
-from common.date.dateUtil import set_date
-from common.page.func.table_data import get_table_data
+from common.date.dateUtil import set_calendar
+from common.page.func.tableData import get_table_data
 
 
 class ConnectTestReport(object):
@@ -54,14 +54,14 @@ class ConnectTestReport(object):
         # 开始时间
         if begin_time:
             self.browser.find_element_by_xpath("//*[@id='startTime']/following-sibling::span[1]//input[1]").click()
-            set_date(date_s=begin_time, date_format='%Y-%m-%d %H:%M:%S')
+            set_calendar(date_s=begin_time, date_format='%Y-%m-%d %H:%M:%S')
             log.info("开始时间选择: {}".format(begin_time))
             sleep(1)
 
         # 结束时间
         if end_time:
             self.browser.find_element_by_xpath("//*[@id='endTime']/following-sibling::span[1]//input[1]").click()
-            set_date(date_s=end_time, date_format='%Y-%m-%d %H:%M:%S')
+            set_calendar(date_s=end_time, date_format='%Y-%m-%d %H:%M:%S')
             log.info("结束时间选择: {}".format(end_time))
             sleep(1)
 
@@ -77,7 +77,8 @@ class ConnectTestReport(object):
 
         # self.get_connect_result()
 
-    def get_connect_result(self, row_num=1):
+    @staticmethod
+    def get_connect_result(row_num=1):
         """
         # 获取第N行数据
         :param row_num: 行号，从1开始，默认为1，表示最新的一条

@@ -3,8 +3,8 @@
 # @Time: 2021/9/13 下午5:10
 
 from common.log.logger import log
-from app.com.wrapper.auto_login import auto_login_tool
-from app.Crawler.config.crawler_template import CrawlerTemplate
+from common.wrapper.autoLogin import auto_login_tool
+from app.Crawler.config.crawlerTemplate import CrawlerTemplate
 
 
 @auto_login_tool

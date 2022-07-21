@@ -33,6 +33,7 @@ class SQLUtil:
                 database = db_info.get(schema + ".database")
                 log.debug("{0}, {1}, {2}, {3}, {4}".format(host, port, database, username, password))
                 self.conn = pymysql.connect(host=host, port=port, user=username, password=password, database=database)
+
             elif self.database_type == "oracle":
                 tnsname = db_info.get("tnsname")
                 log.debug("{0}, {1}, {2}, {3}, {4}".format(host, port, tnsname, username, password))
@@ -104,6 +105,11 @@ class SQLUtil:
                         log.info("查询结果较多，此处不打印")
                 else:
                     log.info("查询结果：{0}".format(date_list))
+
+                # clob转字符串
+                if isinstance(date_list, cx_Oracle.LOB):
+                    date_list = date_list.read()
+
             except Exception as e:
                 raise e
             finally:
@@ -147,12 +153,12 @@ class SQLUtil:
 
 
 if __name__ == '__main__':
-    # db = "gmcc.oracle"
-    # db = "v3.maria"
-    db = "v31.postgres"
-    schema = "nu"
-    # sql = "select * from tn_catalog_def"
-    sql = "select now() from dual"
-    # sql = "update ZG_O_GH8XVA9NLR set col_6='xxxx' where col_3='张三551'"
-    t = SQLUtil(db, schema)
-    log.info("返回结果：%s " % t.select(sql))
+    # db1 = "gmcc.oracle"
+    # db1 = "v3.maria"
+    db1 = "v31.oracle"
+    schema1 = "main"
+    # sql1 = "select * from tn_catalog_def"
+    sql1 = "select result_sample from tn_interface_cfg where 1 = 1 and interface_name = 'pw自动化测试第三方soap接口'"
+    # sql1 = "update ZG_O_GH8XVA9NLR set col_6='xxxx' where col_3='张三551'"
+    t = SQLUtil(db1, schema1)
+    log.info("返回结果：%s " % t.select(sql1))

@@ -5,11 +5,11 @@
 from datetime import datetime
 import json
 from time import sleep
-from app.AiSee.main.login_page import login
-from app.AiSee.main.main_page import AiSee
+from app.AiSee.main.loginPage import login
+from app.AiSee.main.mainPage import AiSee
 from common.log.logger import log
-from common.variable.global_variable import *
-from app.com.run.servers import server_run
+from common.variable.globalVariable import *
+from common.run.servers import server_run
 
 
 def basic_run(steps):

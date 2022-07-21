@@ -6,7 +6,7 @@ from time import sleep
 from datetime import datetime
 from database.SQLHelper import SQLUtil
 from gooflow.codes import store_error_code
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from common.tools.updateData import update_json
 from common.log.logger import log
 from config.loads import db_config
@@ -34,14 +34,17 @@ def preconditions(action):
                 # 变量赋值，加入到global_set
                 if pre_list[i].lower().startswith("global"):
                     log.info("开始设置全局变量：{0}".format(pre_list[i]))
+                    # noinspection PyBroadException
                     try:
                         var_set = pre_list[i].split("|", 2)
                         set_global_var(var_set[1].strip(), var_set[2].strip())
+                        log.info("设置全局变量：{0}成功".format(var_set[1].strip()))
                         run_flag = True
                     except Exception:
                         run_flag = False
                 elif pre_list[i].lower().startswith("updatejson"):
                     # 更新json字段的值
+                    # noinspection PyBroadException
                     try:
                         each_pre = pre_list[i].split("|", 3)
                         json_obj = replace_global_var(each_pre[1])
@@ -65,8 +68,14 @@ def preconditions(action):
                     sleep(wait_time)
                     run_flag = True
                 elif pre_list[i].startswith(get_global_var("Database")):
+                    """
+                    pre_list[i]: ${Database}.main|select 1 from dual|var|continue
+                    :var： 将sql查询结果赋值给变量var
+                    :continue：sql执行报错时继续执行后面的语句，否则报错退出
+                    """
                     this_pre_action = pre_list[i]
                     each_pre = this_pre_action.split('|')
+
                     # 数据库操作
                     db = get_global_var("Database")
                     if db_config.get(db):
@@ -75,27 +84,46 @@ def preconditions(action):
                         sql = each_pre[1]
                         # 替换变量
                         sql = replace_global_var(sql)
+                        # 根据数据类型，pg数据库自动替换uuid()为gen_random_uuid()
+                        db_type = db_config.get(db).get("type")
+                        if db_type == "postgres":
+                            sql = sql.replace("uuid()", "gen_random_uuid()")
+                            sql = sql.replace("UUID()", "gen_random_uuid()")
+                        if db_type == "oracle":
+                            sql = sql.replace("uuid()", "sys_guid()")
+                            sql = sql.replace("UUID()", "sys_guid()")
+                            sql = sql.replace("now()", "sysdate")
                         log.info("{0}【{1}】执行sql语句：{2}".format(db, get_schema(schema), sql))
                         sql_util = SQLUtil(db=db, schema=schema)
-                        if sql.find("select") == 0 or sql.find("SELECT") == 0:      # 查询
-                            sql_result = sql_util.select(sql)
-                        else:   # 修改或删除
+                        # noinspection PyBroadException
+                        try:
+                            if sql.find("select") == 0 or sql.find("SELECT") == 0:      # 查询
+                                sql_result = sql_util.select(sql)
+                            else:   # 修改或删除
+                                if len(each_pre) > 3 and each_pre[3].lower() == "continue":
+                                    skip = True
+                                else:
+                                    skip = False
+                                sql_result = sql_util.update(sql, skip=skip)
+                            log.info("成功执行sql语句：{}".format(sql))
+                            # 将第3个参数加入全局变量字典
+                            if len(each_pre) > 2:
+                                if isinstance(sql_result, str):
+                                    set_global_var(each_pre[2], sql_result, False)
+                                    log.info("给变量{0}赋值：{1}".format(each_pre[2], sql_result))
+                            run_flag = True
+                        except Exception:
                             if len(each_pre) > 3 and each_pre[3].lower() == "continue":
-                                skip = True
-                            else:
-                                skip = False
-                            sql_result = sql_util.update(sql, skip=skip)
-                        log.info("成功执行sql语句：{}".format(sql))
-                        # 将第3个参数加入全局变量字典
-                        if len(each_pre) > 2:
-                            if isinstance(sql_result, str):
-                                set_global_var(each_pre[2], sql_result)
-                                log.info("给变量{0}赋值：{1}".format(each_pre[2], sql_result))
-                        run_flag = True
+                                # 报错继续执行下一条
+                                log.info("sql执行报错，忽略错误")
+                                run_flag = True
+                                continue
+                            run_flag = True
                     else:
                         raise KeyError("db.ini未配置对应数据库信息，请检查")
                 else:
                     each_pre = pre_list[i].split('|')
+                    # noinspection PyBroadException
                     try:
                         # 对特定数据库做操作
                         db_tmp = each_pre[0].split(".", 2)
@@ -115,12 +143,13 @@ def preconditions(action):
                             # 将第3个参数加入全局变量字典
                             if len(each_pre) > 2:
                                 if isinstance(sql_result, str):
-                                    set_global_var(each_pre[2], sql_result)
+                                    set_global_var(each_pre[2], sql_result, False)
                                     log.info("给变量{0}赋值：{1}".format(each_pre[2], sql_result))
                             run_flag = True
-                    except:
+                    except Exception:
                         if len(each_pre) > 3 and each_pre[3].lower() == "continue":
                             # 报错继续执行下一条
+                            log.info("sql执行报错，忽略错误")
                             run_flag = True
                             continue
                         log.error("不支持的预置操作: {0}".format(each_pre[0]))

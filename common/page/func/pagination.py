@@ -2,9 +2,14 @@
 # @Author: peng wei
 # @Time: 2021/8/19 下午4:00
 
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 from common.log.logger import log
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+from common.page.func.pageMaskWait import page_wait
 from time import sleep
 from pykeyboard import PyKeyboard
 
@@ -53,16 +58,18 @@ class Pagination:
     def set_page_size(self, size):
         try:
             self.browser.find_element_by_xpath(self.table_xpath + "//td[1]/select").click()
-            sleep(1)
+            wait = WebDriverWait(self.browser, 1)
+            wait.until(ec.element_to_be_clickable((
+                By.XPATH, self.table_xpath + "//td[1]//option[text()='{0}']".format(size))))
             self.browser.find_element_by_xpath(self.table_xpath + "//td[1]//option[text()='{0}']".format(size)).click()
             log.info("设置每页{0}条".format(size))
-            sleep(2)
+            page_wait(10)
         except NoSuchElementException:
             option_pool = self.browser.find_elements_by_xpath(self.table_xpath + "//td[1]/select/option")
             size_pool = []
             for option in option_pool:
                 size_pool.append(option.get_attribute("text"))
-            log.info("每页大小支持：{0}".format(','.join(size_pool)))
+            log.error("每页大小支持：{0}".format(','.join(size_pool)))
             raise
 
     def step_to_page(self, page_index=1):

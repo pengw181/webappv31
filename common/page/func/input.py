@@ -7,16 +7,16 @@ from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from common.page.func.process_var import var_list_panel
-from common.page.func.wait_element import WaitElement
+from common.page.func.processVar import var_list_panel
+from common.page.func.waitElement import WaitElement
 from common.log.logger import log
-from common.variable.global_variable import *
+from common.variable.globalVariable import *
 
 
 def set_textarea(textarea, msg):
     """
     :param textarea: textarea元素
-    :param msg: 文本内容，数组，每个值之间敲入回车
+    :param msg: 文本内容，1、字符串；2、数组，每个值之间敲入回车
     """
     textarea.clear()
     sleep(1)
@@ -36,9 +36,8 @@ def set_textarea(textarea, msg):
 def set_text_enable_var(input_xpath, form_selector, msg):
     """
     :param input_xpath: 输入框元素xpath
-    :param form_selector: xpath用来定位输入${后出现的下拉框，如//*[@id='form_id']
+    :param form_selector: xpath，用来定位输入${后出现的下拉框，如//*[@id='form_id']，找父节点的上一个平级的id
     :param msg: 输入内容，任意文本，可携带${a}
-    :return: 输入
     """
     browser = get_global_var("browser")
     input_elements = browser.find_elements_by_xpath(input_xpath)
@@ -154,7 +153,7 @@ def set_blob(textarea, array):
                 var_value = s.get("自定义值")
                 textarea.send_keys(var_value)
             else:
-                raise KeyError("【自定义值】类型需要指定 自定义值")
+                raise KeyError("【自定义值】类型需要包含 自定义值")
         elif content_type == "快捷键":
             if s.__contains__("快捷键"):
                 var_value = s.get("快捷键")
@@ -164,7 +163,7 @@ def set_blob(textarea, array):
                     # 后面补充
                     pass
             else:
-                raise KeyError("【自定义值】类型需要指定 自定义值")
+                raise KeyError("【自定义值】类型需要包含 自定义值")
         else:
             var_type = s.get("变量分类")
             var_value = s.get("变量名")

@@ -4,11 +4,29 @@
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from app.VisualModeler.main.menu.tab_xpath import tab_xpath as visual_tab
-from app.Crawler.main.menu.tab_xpath import tab_xpath as crawler_tab
-from common.variable.global_variable import *
+from app.VisualModeler.main.menu.tabXpath import tab_xpath as visual_tab
+from app.Crawler.main.menu.tabXpath import tab_xpath as crawler_tab
+from common.variable.globalVariable import *
 from common.log.logger import log
-from config.loads import properties
+
+
+def get_tab_xpath(tab):
+    """
+    # 获取标签xpath
+    :param tab: 标签名
+    :return: xpath or None
+    """
+    application = get_global_var("Application")
+    if application == "VisualModeler":
+        tab_xpath = visual_tab
+    elif application == "Crawler":
+        tab_xpath = crawler_tab
+    else:
+        tab_xpath = None
+    result = tab_xpath.get(tab)
+    if result is None:
+        raise Exception("tab标签【(0)】未定义".format(tab))
+    return result
 
 
 class TabHandles:
@@ -21,16 +39,11 @@ class TabHandles:
             self.table_handles = {}
 
     def save(self, title):
-        if properties.get("application") == "visualmodeler":
-            tab_xpath = visual_tab
-        elif properties.get("application") == "crawler":
-            tab_xpath = crawler_tab
-        else:
-            tab_xpath = None
+
         if title not in self.table_handles.keys():
-            self.table_handles[title] = tab_xpath.get(title)
+            self.table_handles[title] = get_tab_xpath(title)
             set_global_var("TableHandles", self.table_handles)
-            log.info("tab列表增加: %s, %s" % (title, tab_xpath.get(title)))
+            log.info("tab列表增加: %s, %s" % (title, get_tab_xpath(title)))
         log.info("当前tab句柄信息: {0}".format(get_global_var("TableHandles")))
 
     def switch(self, title):
